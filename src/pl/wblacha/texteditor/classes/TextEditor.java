@@ -1,14 +1,24 @@
 package pl.wblacha.texteditor.classes;
 
 import java.awt.Container;
+import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
 
+import pl.wblacha.texteditor.classes.helpers.MenuActionHelper;
+
 public class TextEditor extends JFrame implements ActionListener {
-        
     protected JTextArea mainTextArea;
     protected JScrollPane scrollPane;
+    //the file submenu
+    private JMenuItem fileNew, fileOpen, fileSave, fileSaveAs, fileSettings, fileExit;
+    //the edit submenu
+    private JMenuItem editCut, editCopy, editPaste, editClear, editRemove, editSelectAll, editFind;
+    //the help menu
+    private JMenuItem helpAbout;
     
     public TextEditor() {
         setTitle("Text editor - developed by Wojciech Blacha 2015");
@@ -33,54 +43,69 @@ public class TextEditor extends JFrame implements ActionListener {
      */
     public JMenuBar createMenuBar() {
         JMenuBar menuBar; 
-        JMenu menu;
+        JMenu fileMenu, editMenu, helpMenu;
         
         //Create the menu bar
         menuBar = new JMenuBar();
         
         //Create the file menu
-        menu = new JMenu("File");
-        menuBar.add(menu);
+        fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
         //Build the file submenu
         //File->New
-        menu.add(createMenuItem("New", "alt+shift+n"));        
+        fileNew = createMenuItem("New", "alt+shift+n");
+        fileMenu.add(fileNew);
+        //  fileNew.addActionListener(this);
         //File->Open File...
-        menu.add(createMenuItem("Open File...", ""));   
+        fileOpen = createMenuItem("Open File...", "");
+        fileMenu.add(fileOpen);   
         //File->Save
-        menu.add(createMenuItem("Save", "ctrl+s")); 
+        fileSave = createMenuItem("Save", "ctrl+s");
+        fileMenu.add(fileSave);
         //File->Save as
-        menu.add(createMenuItem("Save as...", "")); 
+        fileSaveAs = createMenuItem("Save as...", "");
+        fileMenu.add(fileSaveAs); 
         //File->Settings
-        menu.add(createMenuItem("Settings", ""));
-        menu.addSeparator();
+        fileSettings = createMenuItem("Settings", "");
+        fileMenu.add(fileSettings);
+        fileMenu.addSeparator();
         //File->Exit
-        menu.add(createMenuItem("Exit", ""));        
+        fileExit = createMenuItem("Exit", "");
+        fileMenu.add(fileExit);        
         //Create the edit menu
-        menu = new JMenu("Edit");
-        menuBar.add(menu);
+        editMenu = new JMenu("Edit");
+        menuBar.add(editMenu);
         //Build the edit submenu
         //Edit->Cut
-        menu.add(createMenuItem("Cut", "ctrl+x")); 
+        editCut = createMenuItem("Cut", "ctrl+x");
+        editMenu.add(editCut); 
         //Edit->Copy
-        menu.add(createMenuItem("Copy", "ctrl+c"));         
+        editCopy = createMenuItem("Copy", "ctrl+c");
+        editMenu.add(editCopy);         
         //Edit->Paste
-        menu.add(createMenuItem("Paste", "ctrl+v"));   
+        editPaste = createMenuItem("Paste", "ctrl+v");
+        editMenu.add(editPaste);   
         //Edit->Clear text area
-        menu.add(createMenuItem("Clear text area", ""));          
+        editClear = createMenuItem("Clear text area", "");
+        editMenu.add(editClear);          
         //Edit->Remove selected
-        menu.add(createMenuItem("Remove selected", ""));   
+        editRemove = createMenuItem("Remove selected", "");
+        editMenu.add(editRemove);   
         //Edit->Select all
-        menu.add(createMenuItem("Select all", ""));
-        menu.addSeparator();
+        editSelectAll = createMenuItem("Select all", "");
+        editMenu.add(editSelectAll);
+        editMenu.addSeparator();
         //Edit->Find
-        menu.add(createMenuItem("Find", "ctrl+f"));
+        editFind = createMenuItem("Find", "ctrl+f");
+        editMenu.add(editFind);
         //Create the help menu
-        menu = new JMenu("Help");
-        menuBar.add(menu);
+        helpMenu = new JMenu("Help");
+        menuBar.add(helpMenu);
         //Build the help submenu
         //Edit->About text editor
-        menu.add(createMenuItem("About text editor", "")); 
-   
+        helpAbout = createMenuItem("About text editor", "");
+        helpMenu.add(helpAbout);
+
         return menuBar;
     }
     
@@ -88,28 +113,33 @@ public class TextEditor extends JFrame implements ActionListener {
      * Creates shortcut keys for JMenuItem
      * 
      * @param menuItem
-     * @param keyboardShortcut Shortcuts are usually triggered using Ctrl+KEY
+     * @param keyboardShortcut Shortcuts are usually triggered using Ctrl+KEY, sample: "ctrl+s"
      */
     public void setKeyboardShortcut(JMenuItem menuItem, String keyboardShortcut) {
+        KeyStroke keyStroke = null;
+        
         switch(keyboardShortcut.toLowerCase()){
             case "alt+shift+n":
-                menuItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.Event.ALT_MASK + java.awt.Event.SHIFT_MASK));
+                keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.ALT_MASK + Event.SHIFT_MASK);
                 break;
             case "ctrl+s":
-                menuItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.Event.CTRL_MASK));
+                keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
                 break;
             case "ctrl+x":
-                menuItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.Event.CTRL_MASK));
+                keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_X, Event.CTRL_MASK);
                 break;
             case "ctrl+c":
-                menuItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.Event.CTRL_MASK));
+                keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, Event.CTRL_MASK);
                 break;
             case "ctrl+f":
-                menuItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.Event.CTRL_MASK));
+                keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
                 break; 
         }
+        
+        if(keyStroke != null){
+            menuItem.setAccelerator(keyStroke);
+        }
     }
-    
     
     /**
      * Returns a JMenuItem object
@@ -129,8 +159,13 @@ public class TextEditor extends JFrame implements ActionListener {
     @Override
     //This method is required by ActionListener
     public void actionPerformed(ActionEvent e) {
-        JMenuItem source = (JMenuItem)(e.getSource());
-        String s = "Event source: " + source.getText();
-        mainTextArea.append(s + "\n");    
+        if(e.getSource().equals(fileNew)) {
+            MenuActionHelper.fileNew(mainTextArea);
+        } else {
+            
+            JMenuItem source = (JMenuItem)(e.getSource());
+            String s = "Event source: " + source.getText();
+            mainTextArea.append(s + "\n");   
+        }
     }
 }
