@@ -1,14 +1,15 @@
-package pl.wblacha.texteditor.classes;
+package pl.wblacha.texteditor.view;
 
 import java.awt.Container;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import javax.swing.*;
 
-import pl.wblacha.texteditor.classes.helpers.MenuActionHelper;
+import pl.wblacha.texteditor.view.helpers.MenuActionHelper;
 
 public class TextEditor extends JFrame implements ActionListener {
     protected JTextArea mainTextArea;
@@ -161,11 +162,22 @@ public class TextEditor extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource().equals(fileNew)) {
             MenuActionHelper.fileNew(mainTextArea);
+        } else if(e.getSource().equals(fileOpen)) {
+            try {
+                MenuActionHelper.fileOpen(this, mainTextArea);
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         } else {
-            
             JMenuItem source = (JMenuItem)(e.getSource());
             String s = "Event source: " + source.getText();
             mainTextArea.append(s + "\n");   
         }
+        
+        
+        
+        
+        
     }
 }
