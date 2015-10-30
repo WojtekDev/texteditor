@@ -2,7 +2,7 @@ package pl.wblacha.texteditor;
 
 import javax.swing.JFrame;
 
-import pl.wblacha.texteditor.classes.TextEditor;
+import pl.wblacha.texteditor.view.TextEditor;
 
 public class Main {
     /**
