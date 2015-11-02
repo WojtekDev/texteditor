@@ -1,4 +1,4 @@
-package pl.wblacha.texteditor.view;
+package pl.wblacha.texteditor.components;
 
 import java.awt.Container;
 import java.awt.Event;
@@ -6,14 +6,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.*;
 
-import pl.wblacha.texteditor.view.helpers.MenuActionHelper;
+import pl.wblacha.texteditor.components.helpers.MenuActionHelper;
 
 public class TextEditor extends JFrame implements ActionListener {
+    public static String TEXT_EDITOR_TITLE = "Text editor - developed by Wojciech Blacha 2015";
+    
     protected JTextArea mainTextArea;
     protected JScrollPane scrollPane;
+    protected String currentFilePath = "";
+    
     //the file submenu
     private JMenuItem fileNew, fileOpen, fileSave, fileSaveAs, fileSettings, fileExit;
     //the edit submenu
@@ -22,14 +28,13 @@ public class TextEditor extends JFrame implements ActionListener {
     private JMenuItem helpAbout;
     
     public TextEditor() {
-        setTitle("Text editor - developed by Wojciech Blacha 2015");
+        setEditorTitle(TEXT_EDITOR_TITLE);
         setSize(600, 600);
         //Create an editable text area
-        mainTextArea = new JTextArea(8, 20);
-        mainTextArea.setLineWrap(true);
-        mainTextArea.setEditable(true);
+        setMainTextArea();
+        
         //Add a scroll bar to the text area
-        scrollPane = new JScrollPane(mainTextArea);
+        scrollPane = new JScrollPane(getMainTextArea());
         //Add the scroll pane into the content pane
         Container contentPane = getContentPane();
         contentPane.add(scrollPane, "Center");
@@ -62,6 +67,7 @@ public class TextEditor extends JFrame implements ActionListener {
         fileMenu.add(fileOpen);   
         //File->Save
         fileSave = createMenuItem("Save", "ctrl+s");
+        fileSave.setEnabled(false);
         fileMenu.add(fileSave);
         //File->Save as
         fileSaveAs = createMenuItem("Save as...", "");
@@ -159,25 +165,83 @@ public class TextEditor extends JFrame implements ActionListener {
     
     @Override
     //This method is required by ActionListener
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource().equals(fileNew)) {
-            MenuActionHelper.fileNew(mainTextArea);
-        } else if(e.getSource().equals(fileOpen)) {
+    public void actionPerformed(ActionEvent event) {
+        //File > New
+        if(event.getSource().equals(fileNew)) {
+            MenuActionHelper.fileNew(getMainTextArea());            
+        //File > Open
+        } else if(event.getSource().equals(fileOpen)) {
             try {
-                MenuActionHelper.fileOpen(this, mainTextArea);
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                setCurrentFilePath(MenuActionHelper.fileOpen(this, getMainTextArea()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        //File > Save    
+        } else if(event.getSource().equals(fileSave)) {
+            try {
+                MenuActionHelper.fileSave(getCurrentFilePath(), getMainTextArea());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        //File > Save as
+        } else if(event.getSource().equals(fileSaveAs)) {
+            try {
+                setCurrentFilePath(MenuActionHelper.fileSaveAs(this, getMainTextArea()));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
-            JMenuItem source = (JMenuItem)(e.getSource());
+            JMenuItem source = (JMenuItem)(event.getSource());
             String s = "Event source: " + source.getText();
             mainTextArea.append(s + "\n");   
         }
-        
-        
-        
-        
-        
+        setEditorTitle("");
+        if (getCurrentFilePath() != "") {
+            fileSave.setEnabled(true);
+        }
+    }
+
+    /**
+     * Set the text editor title
+     * 
+     * @param title
+     */
+    public void setEditorTitle(String title) {
+        if (title == "") {
+            if (getCurrentFilePath() != "") {
+                setTitle(getCurrentFilePath() + " - " + TEXT_EDITOR_TITLE);
+            }
+        } else {
+            setTitle(title);
+        }
+    }
+    
+    public JTextArea getMainTextArea() {
+        return mainTextArea;
+    }
+
+    public void setMainTextArea() {
+        mainTextArea = new JTextArea(8, 20);
+        mainTextArea.setLineWrap(true);
+        mainTextArea.setEditable(true);
+    }
+
+    public String getCurrentFilePath() {
+        return currentFilePath;
+    }
+
+    public void setCurrentFilePath(String currentFilePath) {
+        this.currentFilePath = currentFilePath;
+    }
+    
+    /**
+     * Gets only file name from current file path
+     * 
+     * @return File name frOm current file path
+     */
+    public String getCurrentFileName() {
+        Path filePath = Paths.get(getCurrentFilePath());
+        String fileName = filePath.getFileName().toString();
+        return fileName;
     }
 }

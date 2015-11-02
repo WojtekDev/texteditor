@@ -2,7 +2,7 @@ package pl.wblacha.texteditor;
 
 import javax.swing.JFrame;
 
-import pl.wblacha.texteditor.view.TextEditor;
+import pl.wblacha.texteditor.components.TextEditor;
 
 public class Main {
     /**
@@ -24,5 +24,4 @@ public class Main {
             }
         });
     }
-
 }
