@@ -68,7 +68,7 @@ public class MenuActionHelper {
         });
         int returnValue = fileChooser.showOpenDialog(textEditor);
         if (returnValue != 0) {
-            return null;
+            return "";
         } 
         selectedFile = fileChooser.getSelectedFile();
         FileInputStream fileIn = new FileInputStream(selectedFile);
